@@ -47,10 +47,10 @@ graph TD
         U --> |Stores| Z[Tech Columns]
     end
 
-    classDef endpoint fill:#f9f,stroke:#333,stroke-width:2px
-    classDef process fill:#bbf,stroke:#333,stroke-width:2px
-    classDef storage fill:#bfb,stroke:#333,stroke-width:2px
-    classDef cloud fill:#fcf,stroke:#333,stroke-width:2px
+    classDef endpoint fill:#f9f,stroke:#333,stroke-width:2px,color:#000
+    classDef process fill:#bbf,stroke:#333,stroke-width:2px,color:#000
+    classDef storage fill:#bfb,stroke:#333,stroke-width:2px,color:#000
+    classDef cloud fill:#fcf,stroke:#333,stroke-width:2px,color:#000
     
     class A,B,C,D endpoint
     class E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T process
