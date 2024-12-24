@@ -1,25 +1,185 @@
-# Champion Tracking System: Conversation Flow and Backend Execution
+# Agentic Assistant System: Architecture and Implementation
 
-This document explains how the Champion Tracking System processes user requests through its multi-agent architecture, demonstrating both the conversational flow and the underlying technical execution.
+## High-Level Architecture
 
-## Conversation Flow Example
-
-### 1. User Initiation
+```mermaid
+graph TB
+    User[User Interface] --> RE[Reasoning Engine]
+    RE --> Memory[(Memory Store)]
+    RE --> Orchestrator[Orchestrator/Workflow Engine]
+    
+    subgraph "Security Layer"
+        RBAC[RBAC Service]
+    end
+    
+    Orchestrator --> RBAC
+    RBAC --> Agents
+    
+    subgraph "Agent Layer"
+        Agents --> DataAgent[Data Agent]
+        Agents --> ValidationAgent[Validation Agent]
+        Agents --> UpdateAgent[Update Agent]
+        Agents --> NotificationAgent[Notification Agent]
+    end
+    
+    subgraph "Tool Layer"
+        DataAgent --> DataTools[Data Access Tools]
+        ValidationAgent --> ValidationTools[Validation Tools]
+        UpdateAgent --> UpdateTools[Update Tools]
+        NotificationAgent --> NotificationTools[Notification Tools]
+    end
+    
+    DataTools --> DataSources[(Data Sources)]
+    ValidationTools --> ValidationSources[(Validation Sources)]
+    UpdateTools --> UpdateTargets[(Update Targets)]
+    NotificationTools --> NotificationChannels[(Notification Channels)]
 ```
-User: "I need to track champions in my Salesforce database. Specifically, I want to monitor when they change companies, update their records, and handle associated account information automatically."
+
+## Core Components
+
+### 1. Reasoning Engine
+- Natural language understanding
+- Intent classification
+- Task decomposition
+- Workflow planning
+- Response generation
+
+### 2. Memory Store
+- Chat history persistence
+- Context management
+- User preferences
+- Session state
+- Configuration cache
+
+### 3. Orchestrator (Workflow Engine)
+- Workflow execution
+- Agent coordination
+- State management
+- Error handling
+- Recovery mechanisms
+
+### 4. RBAC Layer
+- Permission management
+- Access control
+- Authentication
+- Authorization
+- Audit logging
+
+### 5. Agent Layer
+Each agent has specific responsibilities and tools:
+
+#### Data Agent
+- Tools:
+  - Database connectors
+  - API clients
+  - Query builders
+  - Data transformers
+- Responsibilities:
+  - Data retrieval
+  - Filtering
+  - Validation
+  - Formatting
+
+#### Validation Agent
+- Tools:
+  - Cross-reference checkers
+  - Pattern matchers
+  - Verification services
+  - Confidence calculators
+- Responsibilities:
+  - Change detection
+  - Data verification
+  - Source validation
+  - Confidence scoring
+
+#### Update Agent
+- Tools:
+  - Record updaters
+  - Transaction managers
+  - Relationship mappers
+  - Change trackers
+- Responsibilities:
+  - Record updates
+  - Data synchronization
+  - Relationship management
+  - Change logging
+
+#### Notification Agent
+- Tools:
+  - Message formatters
+  - Channel connectors
+  - Delivery trackers
+  - Template engines
+- Responsibilities:
+  - Alert generation
+  - Channel selection
+  - Message delivery
+  - Status tracking
+
+## System Flow
+
+### Request Processing Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant RE as Reasoning Engine
+    participant M as Memory
+    participant O as Orchestrator
+    participant R as RBAC
+    participant A as Agents
+    
+    U->>RE: Submit Request
+    RE->>M: Store Request
+    RE->>RE: Analyze Intent
+    RE->>O: Create Workflow
+    O->>R: Check Permissions
+    R-->>O: Permission Status
+    
+    alt Permissions Granted
+        O->>A: Execute Workflow
+        A-->>O: Execution Results
+        O->>RE: Process Results
+        RE->>M: Update Memory
+        RE->>U: Return Response
+    else Permissions Denied
+        R-->>O: Access Denied
+        O->>RE: Error Status
+        RE->>U: Permission Error
+    end
 ```
 
-**Backend Execution:**
-- Request received by Reasoning Engine
-- Initial intent parsing begins
-- No RBAC check needed at this stage as it's just intent gathering
+## User Interaction Example
 
-### 2. Reasoning Engine Interaction
+### 1. Initial Request
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    
+    U->>S: I need to track champions in my database when they change companies
+    Note over S: Reasoning Engine:<br>- Analyzes intent<br>- Plans workflow<br>- Checks context
+    S->>U: Let me help you set that up. Which data source contains your champion information?
+    Note over S: Memory Store:<br>- Saves conversation<br>- Maintains context
+    U->>S: Salesforce CRM
+    Note over S: RBAC Layer:<br>- Validates permissions<br>- Checks access rights
 ```
-Reasoning Engine: [Confirms problem definition and requirements]
-- Monitors champions in Salesforce
-- Identifies company changes
-- Updates records accordingly
+
+### 2. Configuration Phase
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    
+    Note over S: Orchestrator:<br>- Manages workflow<br>- Coordinates agents
+    S->>U: Would you like to enable cross-source validation for higher accuracy?
+    U->>S: Yes
+    S->>U: How frequently should we check for updates?
+    U->>S: Daily
+    S->>U: Where should we send notifications about changes?
+    U->>S: Slack
 ```
 
 **Backend Execution:**
@@ -28,14 +188,33 @@ Reasoning Engine: [Confirms problem definition and requirements]
 - Begins forming execution plan
 - No external service calls yet
 
-### 3. Workflow Planning
-```
-Reasoning Engine: [Creates detailed workflow plan]
-- Trigger setup (daily)
-- Data pull configuration
-- Status check planning
-- Record update strategy
-- Alert system integration
+### 3. Execution Phase
+
+```mermaid
+sequenceDiagram
+    participant S as System
+    participant DA as Data Agent
+    participant VA as Validation Agent
+    participant UA as Update Agent
+    participant NA as Notification Agent
+    
+    Note over S: Orchestrator initiates workflow
+    
+    S->>DA: Start data collection
+    Note over DA: Checks conditions:<br>- Active contacts<br>- Recent activity<br>- Profile completeness
+    DA-->>S: Found 50 champions
+    
+    S->>VA: Validate changes
+    Note over VA: Analyzes changes:<br>- 5 company changes<br>- 3 high confidence<br>- 2 pending verification
+    VA-->>S: Validation complete
+    
+    S->>UA: Process updates
+    Note over UA: Updates records:<br>- 5 champion updates<br>- 2 new companies<br>- 3 relationship changes
+    UA-->>S: Updates complete
+    
+    S->>NA: Send notifications
+    Note over NA: Distributes alerts:<br>- Team updates<br>- Admin alerts<br>- Sales notifications
+    NA-->>S: Notifications sent
 ```
 
 **Backend Execution:**
@@ -54,43 +233,46 @@ Orchestrator: [Executes workflow steps]
 5. Sends alerts
 ```
 
-**Backend Execution:**
-Detailed sequence with RBAC checks at each step:
+**Backend Execution and User Interaction:**
 
-1. **Data Retrieval Phase:**
+1. **Initial RBAC Validation:**
    ```mermaid
    sequenceDiagram
-   Orchestrator->>RBAC: Validate Permissions
-   RBAC-->>Data Agent: Grant Access
-   Data Agent->>External Services: Query Salesforce
-   External Services-->>Data Agent: Return Data
+   Orchestrator->>RBAC: Validate All Required Permissions
+   RBAC-->>Orchestrator: Permission Status for All Operations
+   Orchestrator->>User: Display Permission Status
    ```
 
-2. **Validation Phase:**
+2. **Data Retrieval Phase:**
    ```mermaid
    sequenceDiagram
-   Orchestrator->>RBAC: Validate Permissions
-   RBAC-->>Validation Agent: Grant Access
+   Data Agent->>External Services: Query Data Sources
+   External Services-->>Data Agent: Return Data
+   Data Agent->>User: "I found 50 champions in the system. Here's what I discovered..."
+   ```
+
+3. **Validation Phase:**
+   ```mermaid
+   sequenceDiagram
    Validation Agent->>External Services: Verify Changes
    External Services-->>Validation Agent: Return Status
+   Validation Agent->>User: "I detected 5 company changes. Here are the details..."
    ```
 
-3. **Update Phase:**
+4. **Update Phase:**
    ```mermaid
    sequenceDiagram
-   Orchestrator->>RBAC: Validate Permissions
-   RBAC-->>Update Agent: Grant Access
    Update Agent->>External Services: Update Records
    External Services-->>Update Agent: Confirm Updates
+   Update Agent->>User: "I've updated the records. Here's what changed..."
    ```
 
-4. **Notification Phase:**
+5. **Notification Phase:**
    ```mermaid
    sequenceDiagram
-   Orchestrator->>RBAC: Validate Permissions
-   RBAC-->>Notification Agent: Grant Access
    Notification Agent->>External Services: Send Alerts
    External Services-->>Notification Agent: Confirm Delivery
+   Notification Agent->>User: "I've sent notifications to relevant stakeholders..."
    ```
 
 ## Key Components and Their Roles
@@ -147,27 +329,33 @@ Detailed sequence with RBAC checks at each step:
 
 ## Security and Permissions
 
-Every operation in the system goes through RBAC validation:
+The system performs comprehensive RBAC validation upfront:
 
-1. **Initial Request:**
-   - Validates user permissions
-   - Checks access levels
-   - Verifies resource availability
+1. **Pre-execution Permission Check:**
+   ```
+   Reasoning Engine: "Before we proceed, let me verify all required permissions..."
+   
+   Checking permissions for:
+   - Data source access
+   - Record modification rights
+   - Notification capabilities
+   - External service access
+   
+   "All permissions verified. Here's what we can do..."
+   ```
 
-2. **Data Operations:**
-   - Validates read/write permissions
-   - Ensures data access compliance
-   - Maintains audit logs
+2. **Permission Summary:**
+   The system provides a clear overview of:
+   - Available operations based on permissions
+   - Any restricted actions
+   - Alternative approaches if needed
 
-3. **External Service Calls:**
-   - Validates API permissions
-   - Ensures secure connections
-   - Manages authentication
-
-4. **Notifications:**
-   - Validates notification permissions
-   - Ensures data privacy
-   - Controls information distribution
+3. **Transparent Operation Flow:**
+   After permission verification:
+   - Each agent operates with pre-validated access
+   - Continuous feedback to user about progress
+   - Clear communication of results
+   - No workflow disruption for permission checks
 
 ## Error Handling
 
