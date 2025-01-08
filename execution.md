@@ -1,5 +1,26 @@
 # Decision Layer Execution Flow
 
+```mermaid
+gantt
+    title Phase Plan for Development
+    dateFormat  YYYY-MM-DD
+    section Phase 1: Core Components
+    Set up base architecture components    :done, p1_task1, 2025-01-01, 3d
+    Implement basic NLP pipeline           :active, p1_task2, after p1_task1, 5d
+    Develop initial semantic mapper        :p1_task3, after p1_task2, 4d
+    Create basic SQL generation system     :p1_task4, after p1_task3, 6d
+    section Phase 2: Advanced Features
+    Enhance context understanding          :p2_task1, after p1_task4, 7d
+    Implement complex query handling       :p2_task2, after p2_task1, 8d
+    Add query optimization features        :p2_task3, after p2_task2, 5d
+    Develop error correction system        :p2_task4, after p2_task3, 6d
+    section Phase 3: Integration
+    Connect all system components          :p3_task1, after p2_task4, 4d
+    Implement error handling               :p3_task2, after p3_task1, 3d
+    Add logging and monitoring             :p3_task3, after p3_task2, 5d
+    Optimize performance                   :p3_task4, after p3_task3, 6d
+```
+
 This document explains the detailed execution flow for the query: "Find all active customers and their recent orders"
 
 ## API Layer Flow
